@@ -1,31 +1,27 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template
 
 # Create a Blueprint
 bp = Blueprint('main', __name__)
 
 # Home route
-@bp.route('/')
+# @bp.route('/', '/home')
 def index():
-    return render_template('index.html')
-
+    return render_template(template_name_or_list='home.html')
 
 # About route
-@bp.route('/about')
-def about():
-    return render_template('about.html')
+# @bp.route('/notification')
+def settings():
+    return render_template(template_name_or_list='settings.html')
 
+def script_scheduling():
+    return render_template(template_name_or_list='script_scheduling.html')
 
-# Example of handling a form submission
-@bp.route('/submit', methods=['GET', 'POST'])
-def submit():
-    if request.method == 'POST':
-        name = request.form['name']
-        flash(f'Thank you, {name}!', 'success')
-        return redirect(url_for('main.index'))
-    return render_template('submit.html')
+def links():
+    return render_template(template_name_or_list='saved_links.html')
 
-
-# Error handling
-@bp.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
+# Define multiple endpoints for the same view function
+bp.add_url_rule('/', view_func=index)
+bp.add_url_rule('/home', view_func=index)
+bp.add_url_rule(rule='/notification_setting', view_func=settings)
+bp.add_url_rule(rule='/scheduling', view_func=script_scheduling)
+bp.add_url_rule(rule='/links', view_func=links)
