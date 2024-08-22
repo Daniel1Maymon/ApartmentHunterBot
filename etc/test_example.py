@@ -71,47 +71,75 @@ def check_text_presence(page, text) -> bool:
     # Check if the specific text exists anywhere on the page
     return page.locator(f"text={text}").is_visible()
 
-def find_see_more_button(page):
+def find_see_more_button(post):
     # Locate the div with role='button' and text 'See more'
-    see_more_button = page.locator("div[role='button']:has-text('See more'), div[role='button']:has-text('עוד'), div[role='button']:has-text('ראה עוד')")
+    see_more_button = post.locator("div[role='button']:has-text('See more'), div[role='button']:has-text('עוד'), div[role='button']:has-text('ראה עוד')")
     return see_more_button 
 
 def click_on_see_more_button(page, post):
-    # Find and click the 'See more' button
-    see_more_button = find_see_more_button(page)
-    if see_more_button:
+    # Look for the "See more" or "ראה עוד" button within the specific post element
+    # see_more_button = post.locator("div[role='button']:has-text('See more'), div[role='button']:has-text('קרא עוד'), div[role='button']:has-text('ראה עוד')")
+
+    # Use the page object to find the "See more" button within the post
+    see_more_button = post.query_selector("div[role='button']:has-text('See more'), div[role='button']:has-text('קרא עוד'), div[role='button']:has-text('ראה עוד')")
+
+    # Click the "See more" button if it exists
+    if see_more_button and see_more_button.is_visible():
         see_more_button.click()
-        print("Clicked 'See more' button.")
-        page.wait_for_timeout(1000)  # Wait for the content to expand
-    else:
-        print("'See more' button not found.")
+        page.wait_for_timeout(1000)  # Wait for content to expand
     
+def get_post_link(post):
+    link_elements = post.query_selector_all("a[href]")    
+    links = [link.get_attribute("href") for link in link_elements]
+    
+    # Save the post's link
+    post_link = ""
+    for link in links:
+        if "groups" in link and "posts" in link:
+            post_link = link
+            
+    # Clean the url from unnecessary additions
+    cleaned_url = "/".join(post_link.split("/")[:7])
+    return cleaned_url
+
 def scrape_group_posts(page, group_url, max_posts=10):
     page.goto(group_url)
     time.sleep(5)  # Wait for the page to load
 
     posts = []
-    while len(posts) < max_posts:
-        # Select all posts visible on the page
-        post_elements = page.query_selector_all("div[role='article']")
-
-        for post in post_elements:
-            if len(posts) >= max_posts:
-                break
-            try:
-                # Click on the "See More" button if it exists
-                click_on_see_more_button(page=page, post=post)
-                
-                # Extract text content from the post
-                post_text = post.inner_text()
-                posts.append(post_text)
-                print(post_text)  # Print or store the post content
-            except Exception as e:
-                print(f"Error extracting post: {e}")
-        
-        # Scroll down to load more posts
+    
+    # Select all posts visible on the page
+    post_elements = page.query_selector_all("div[role='article']")
+    
+    # Scroll down to load more posts
+    if len(post_elements) < 5:
         page.evaluate("window.scrollBy(0, document.body.scrollHeight)")
-        time.sleep(3)  # Give some time for posts to load
+        time.sleep(random.randint(2, 4))  # Give some time for posts to load
+        post_elements = page.query_selector_all("div[role='article']")
+            
+    
+    # Clear empty posts
+    post_elements = [post for post in post_elements if len(post.inner_text()) > 0]
+
+    for post in post_elements:
+        try:
+            # Click on the "See More" button if it exists
+            click_on_see_more_button(page=page, post=post)
+            
+            # Extract text content from the post
+            post_text = post.inner_text()
+            post_link = get_post_link(post)
+            
+            if len(post_text) > 0 and  any(post_link == post[1] for post in posts) is not True:
+                post_content = post.query_selector("div[data-ad-preview='message']").inner_text()
+                posts.append([post_content, post_link])
+                # posts.append(post_text)
+                print("---\n")
+                print(f"{post_link}")
+                print(f"{post_content}")  # Print or store the post content
+                
+        except Exception as e:
+            print(f"Error extracting post: {e}")
 
     return posts
 
