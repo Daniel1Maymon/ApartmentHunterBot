@@ -6,11 +6,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Script Scheduling</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
     </head>
 
     <body>
-        <!-- Return Back Button -->
-        <a href="{{ url_for('main.index') }}" class="btn btn-blue">Return Back</a>
+    <div id="root">
+        <!-- This div will be used as the root for our future React application -->
+    </div>
+
+        <div class="button-container">
+            <button id="run-scraper-btn" class="btn btn-green">Run Scraper</button>
+
+            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+
+            <!-- Return Back Button -->
+            <a href="{{ url_for('main.index') }}" class="btn btn-blue">Return Back</a>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     </body>
 
 </html>
