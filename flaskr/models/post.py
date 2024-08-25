@@ -1,6 +1,7 @@
 from datetime import datetime
 from bson.objectid import ObjectId
 from flaskr.database import mongo
+from pymongo.errors import PyMongoError
 
 def insert_post(link, content):
     """
@@ -15,6 +16,13 @@ def insert_post(link, content):
     """
     
     pass
+
+def insert_posts(posts: list):
+    try:
+        result = mongo.db.collection.insert_many(documents=posts)
+    
+    except PyMongoError as e:
+        raise PyMongoError(f"An error occurred while saving the posts: {e}")
 
 def get_post_by_id(post_id):
     """

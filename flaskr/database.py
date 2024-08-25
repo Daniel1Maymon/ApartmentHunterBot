@@ -1,5 +1,7 @@
 from flask_pymongo import PyMongo 
 
+print(f"\n::: _name__ = {__name__} :::\n")
+
 # Initialize PyMongo
 mongo = PyMongo()
 
