@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 import os, time, random
+from flaskr.database import mongo
 
 def get_env_path() -> str:
     # Get the directory of the current script
@@ -129,10 +130,23 @@ def scrape_group_posts(page, group_url, max_posts=10):
             # Extract text content from the post
             post_text = post.inner_text()
             post_link = get_post_link(post)
+            post_url_id = post_link.split("/")[-1]
+            post_exists = mongo.db.collection.find_one({"link": {"$regex": post_url_id}})
             
-            if len(post_text) > 0 and  any(post_link == post[1] for post in posts) is not True:
-                post_content = post.query_selector("div[data-ad-preview='message']").inner_text()
-                posts.append([post_content, post_link])
+            if len(post_text) > 0 and not post_exists:
+                print(":: post_content ::")
+                post_content = post.query_selector("div[data-ad-preview='message']")
+                if post_content:  
+                    post_content = post_content.inner_text()
+                    # posts.append([post_content, post_link])
+                    _post = {
+                        "link": post_link,
+                        "content": post_content,
+                        "hasBeenSent": False
+                    }
+                    posts.append(_post)
+                    
+                print(":: END OF post_content ::")
                 # posts.append(post_text)
                 print("---\n")
                 print(f"{post_link}")
@@ -143,7 +157,8 @@ def scrape_group_posts(page, group_url, max_posts=10):
 
     return posts
 
-def make_login_and_get_posts(username, password):
+def make_login_and_get_posts():
+    posts = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         page = browser.new_page()
@@ -160,13 +175,19 @@ def make_login_and_get_posts(username, password):
         
         browser.close()
         
+    return posts
+    
+def run_scraper():
+    posts = make_login_and_get_posts() 
+    return posts
+    for post in posts:
+        post["hasBeenSent"] = False
+        mongo.db.posts.insert_one(post)
+        
 def main():
-    # Enter your user credentials here (remember to secure this information)
-    username = os.getenv("FB_USERNAME")
-    password = os.getenv("FB_PASSWORD")
 
     # run_multiple_logins(1, username, password)
-    make_login_and_get_posts(username, password)
+    make_login_and_get_posts()
     
 
     
