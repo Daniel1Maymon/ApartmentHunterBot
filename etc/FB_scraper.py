@@ -1,7 +1,12 @@
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 import os, time, random
+# from etc import email_functions
+from etc import email_functions
 from flaskr.database import mongo
+from flask import current_app
+
+from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
 
 group_links = ["https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1870209196564360/?sorting_setting=CHRONOLOGICAL",
@@ -28,7 +33,8 @@ filters = [
     "יחידת דיור",  
     "4 חד",
     "5 חד", 
-    "2 חד"
+    "2 חד",
+    "2 חדרים",
     "מתפנה חדר", 
     "הרצל", 
     "ז'בוטינסקי", 
@@ -143,7 +149,7 @@ def click_on_see_more_button(page, post):
 def post_contain_unwanted_words(post_content):
     for word in filters:
         if word in post_content:
-            print(f"------\nThe word [{word}] is in [{post_content}]\n-------\n")
+            print(f"\n------The word [{word}] is in [{post_content}]-------\n")
             return True
         
     return False
@@ -200,7 +206,7 @@ def scrape_group_posts(page, group_url, max_posts=10):
                     print(f"---\npost_text[:10]= {post_text[:10]}")
                     print(f"---\npost_text[:10]= {post_content[:10]}")
                     post_content_exists = mongo.db.collection.find_one({"content": post_content})
-                    if not post_contain_unwanted_words(post_content) and not post_content_exists:
+                    if (not post_contain_unwanted_words(post_content)) and not post_content_exists:
                         _post = {
                             "link": post_link,
                             "content": post_content,
@@ -208,21 +214,26 @@ def scrape_group_posts(page, group_url, max_posts=10):
                         }
                         posts.append(_post)
                     
-                print(":: END OF post_content ::")
-                # posts.append(post_text)
-                print("---\n")
-                print(f"{post_link}")
-                print(f"{post_content}")  # Print or store the post content
+                    print(":: END OF post_content ::")
+                    # posts.append(post_text)
+                    print("---\n")
+                    print(f"{post_link}")
+                    print(f"{post_content}")  # Print or store the post content
                 
         except Exception as e:
             print(f"Error extracting post: {e}")
 
     return posts
 
+def mark_posts_as_sent():
+    filter_criteria = {'hasBeenSent': False}
+    update_values = {'hasBeenSent': True}
+    return update_posts_by_filter(filter_criteria, update_values)
+
 def make_login_and_get_posts():
     posts = []
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
         username = os.getenv("FB_USERNAME")
@@ -240,14 +251,39 @@ def make_login_and_get_posts():
         browser.close()
         
     return posts
+
+def send_email_with_new_posts():
+    # Read new posts from DB ("hasBeenSend:'false'")
+    filter = {"hasBeenSent": False}
+    
+    new_posts = get_posts_by_filter(filter_criteria=filter)
+    
+    sender = 'daniel1maymon@gmail.com'
+    recipients = [sender]
+    subject = "פוסטים לדירות בפייסבוק"
+    
+    if not new_posts:
+        print("No new posts found")
+        
+    else:
+        msg = email_functions.format_posts_for_email(posts=new_posts)
+        
+        email_functions.send_email(subject=subject, body=msg, sender=sender, recipients=recipients)
+    
+        # Marking the nre posts as sent
+        mark_posts_as_sent()
+        
     
 def run_scraper():
     start_time = time.time()
-    posts = make_login_and_get_posts() 
+    # posts = make_login_and_get_posts() 
     end_time = time.time()
     total_time = end_time-start_time
     print(f"\n---------\ntotal running time: {total_time} ({(total_time/60):.2f} minutes)\n---------\n")
-    return posts
+    
+
+    send_email_with_new_posts()
+    # return posts
  
 def main():
 
