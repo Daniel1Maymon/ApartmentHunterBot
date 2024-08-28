@@ -3,6 +3,37 @@ from bson.objectid import ObjectId
 from flaskr.database import mongo
 from pymongo.errors import PyMongoError
 
+def update_posts_by_filter(filter_criteria, update_values):
+    """
+    Updates posts in the database based on the given filter criteria.
+
+    Parameters:
+    - filter_criteria: A dictionary containing the filter criteria (e.g., {'link': 'https://example.com'}).
+    - update_values: A dictionary containing the fields to update and their new values (e.g., {'hasBeenSent': True}).
+
+    Returns:
+    - The number of documents that were updated.
+    """
+    
+    result = mongo.db.collection.update_many(
+        filter=filter_criteria, 
+        update={'$set': update_values})
+    
+    return result.modified_count
+
+def get_posts_by_filter(filter_criteria):
+    """
+    Retrieves posts from the database based on the given filter criteria.
+
+    Parameters:
+    - filter_criteria: A dictionary containing the filter criteria (e.g., {'link': 'https://example.com'}).
+
+    Returns:
+    - A list of posts that match the filter criteria.
+    """
+    posts = mongo.db.collection.find(filter_criteria)
+    return list(posts) 
+
 def insert_post(link, content):
     """
     Inserts a new post into the database.
