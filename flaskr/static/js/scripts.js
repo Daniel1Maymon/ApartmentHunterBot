@@ -6,9 +6,11 @@ function showLoading() {
     
     const runScraperBtn = document.getElementById("run-scraper-btn")
     const loadingSpinner = document.getElementById("loading-spinner")
+    const loadingContent = document.getElementById("loading-content");
 
     runScraperBtn.style.display = 'none';
     loadingSpinner.style.display = 'block';
+    loadingContent.style.display = "block";
 
     console.log("Spinner visibility:", window.getComputedStyle(loadingSpinner).display);  // Debugging line
 
@@ -22,6 +24,7 @@ function hideLoading(){
 
     runScraperBtn.style.display = 'block';
     loadingSpinner.style.display = 'none'
+    loadingContent.style.display = "none";
 }
 
 async function runScraper() {

@@ -10,14 +10,22 @@
     </head>
 
     <body>
-    <div id="root">
-        <!-- This div will be used as the root for our future React application -->
-    </div>
+        <div id="root">
+            <!-- This div will be used as the root for our future React application -->
+        </div>
 
-        <div class="button-container">
+        <div class="button-container" style="text-align: center; ">
+
             <button id="run-scraper-btn" class="btn btn-green">Run Scraper</button>
 
-            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+            <div id="loading-content" style="display: none;">
+                <div id="loading-spinner" class="spinner" ></div>
+                <p id="loading-text"
+                    style=" text-align: center; font-size: 25px; font-weight: bold; margin-bottom: 10px; direction: rtl; text-align: right;">
+                    התהליך לוקח כמה דקות. בינתיים הנה תינוקות מתחבקים</p>
+                <iframe id="loading-gif" src="https://giphy.com/embed/v65rDtklV9l6g" width="267" height="480"
+                    style="border: block;" frameborder="0" allowfullscreen></iframe>
+            </div>
 
             <!-- Return Back Button -->
             <a href="{{ url_for('main.index') }}" class="btn btn-blue">Return Back</a>
