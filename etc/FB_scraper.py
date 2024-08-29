@@ -8,7 +8,8 @@ from flask import current_app
 
 from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
 
-group_links = ["https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
+group_links = [
+                "https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1870209196564360/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/520940308003364/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/647901439404148/?sorting_setting=CHRONOLOGICAL",
@@ -230,7 +231,7 @@ def mark_posts_as_sent():
     update_values = {'hasBeenSent': True}
     return update_posts_by_filter(filter_criteria, update_values)
 
-def make_login_and_get_posts():
+def make_login_and_get_new_posts():
     posts = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -241,15 +242,15 @@ def make_login_and_get_posts():
 
         login_to_facebook(page, username, password)
 
-        group_url = "https://www.facebook.com/groups/647901439404148/?sorting_setting=CHRONOLOGICAL"  # Replace with your group URL
         posts = []
         for link in group_links:
-            posts.extend(scrape_group_posts(page, link))
+            group_posts = scrape_group_posts(page, link)
+            posts.extend(group_posts)
             pass
             
         print(f"Scraped {len(posts)} posts")
         browser.close()
-        
+    
     return posts
 
 def send_email_with_new_posts():
@@ -266,6 +267,7 @@ def send_email_with_new_posts():
         print("No new posts found")
         
     else:
+        print(f"\n--------- Sending email with the new posts ({len(new_posts)} found) --------- \n")
         msg = email_functions.format_posts_for_email(posts=new_posts)
         
         email_functions.send_email(subject=subject, body=msg, sender=sender, recipients=recipients)
@@ -275,20 +277,19 @@ def send_email_with_new_posts():
         
     
 def run_scraper():
+    print(f"\n---------\nRun Scraper\n---------\n")
     start_time = time.time()
-    # posts = make_login_and_get_posts() 
+    new_posts = make_login_and_get_new_posts() 
     end_time = time.time()
     total_time = end_time-start_time
     print(f"\n---------\ntotal running time: {total_time} ({(total_time/60):.2f} minutes)\n---------\n")
     
+    return new_posts
 
-    send_email_with_new_posts()
-    # return posts
- 
 def main():
 
     # run_multiple_logins(1, username, password)
-    make_login_and_get_posts()
+    make_login_and_get_new_posts()
     
 
     

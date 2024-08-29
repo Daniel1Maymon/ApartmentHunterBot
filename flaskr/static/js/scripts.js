@@ -5,14 +5,14 @@ function showLoading() {
     console.log("\n:: showLoading() ::\n");
     
     const runScraperBtn = document.getElementById("run-scraper-btn")
-    const loadingSpinner = document.getElementById("loading-spinner")
+    // const loadingSpinner = document.getElementById("loading-spinner")
     const loadingContent = document.getElementById("loading-content");
 
     runScraperBtn.style.display = 'none';
-    loadingSpinner.style.display = 'block';
+    // loadingSpinner.style.display = 'block';
     loadingContent.style.display = "block";
 
-    console.log("Spinner visibility:", window.getComputedStyle(loadingSpinner).display);  // Debugging line
+    // console.log("Spinner visibility:", window.getComputedStyle(loadingSpinner).display);  // Debugging line
 
 
 }
@@ -20,10 +20,11 @@ function showLoading() {
 // Function to show the button and hide the loading spinner
 function hideLoading(){
     const runScraperBtn = document.getElementById("run-scraper-btn")
-    const loadingSpinner = document.getElementById("loading-spinner")
+    // const loadingSpinner = document.getElementById("loading-spinner")
+    const loadingContent = document.getElementById("loading-content");
 
     runScraperBtn.style.display = 'block';
-    loadingSpinner.style.display = 'none'
+    // loadingSpinner.style.display = 'none'
     loadingContent.style.display = "none";
 }
 
