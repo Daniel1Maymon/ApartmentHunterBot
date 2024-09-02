@@ -3,28 +3,20 @@
 // Function to hide the button and show the loading spinner
 function showLoading() {
     console.log("\n:: showLoading() ::\n");
-    
-    const runScraperBtn = document.getElementById("run-scraper-btn")
-    // const loadingSpinner = document.getElementById("loading-spinner")
+
+    const runScraperBtn = document.getElementById("run-scraper-btn");
     const loadingContent = document.getElementById("loading-content");
 
     runScraperBtn.style.display = 'none';
-    // loadingSpinner.style.display = 'block';
     loadingContent.style.display = "block";
-
-    // console.log("Spinner visibility:", window.getComputedStyle(loadingSpinner).display);  // Debugging line
-
-
 }
 
 // Function to show the button and hide the loading spinner
 function hideLoading(){
     const runScraperBtn = document.getElementById("run-scraper-btn")
-    // const loadingSpinner = document.getElementById("loading-spinner")
     const loadingContent = document.getElementById("loading-content");
 
     runScraperBtn.style.display = 'block';
-    // loadingSpinner.style.display = 'none'
     loadingContent.style.display = "none";
 }
 
@@ -44,8 +36,23 @@ async function runScraper() {
     } catch (error) {
         alert("Error: " + error.message)
     }
+
+    
     console.log(":: END runScraper ::");
     
+}
+
+
+// Function to handle the 'new_post' event
+function handleNewPost(post) {
+    const postsTable = document.getElementById('postsTable').getElementsByTagName('tbody')[0];
+    const newRow = postsTable.insertRow();
+    const titleCell = newRow.insertCell(0);
+    const linkCell = newRow.insertCell(1);
+
+    // Inserting data into the cells
+    titleCell.textContent = post.title;
+    linkCell.innerHTML = `<a href="${post.link}" target="_blank">${post.link}</a>`;
 }
 
 // Function to handle the scraper execution process
@@ -57,12 +64,17 @@ async function handleRunScraper() {
     console.log("\nrunScraper()\n");
     await runScraper();
 
+    // Listen for 'new_post' event
+    socket.on('new_post', handleNewPost);
+
     console.log("\nhideLoading()\n");
     hideLoading()
 }
 
 // Function to set up event listeners
 function setupEventListeners() {
+    const socket = io(); 
+
     const runScraperBtn = document.getElementById('run-scraper-btn');
     console.log(runScraperBtn);
 

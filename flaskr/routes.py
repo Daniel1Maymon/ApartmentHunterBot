@@ -3,6 +3,7 @@ from etc.fb_scraper import run_scraper, send_email_with_new_posts
 from models import post
 from pymongo.errors import PyMongoError
 
+
 # Create a Blueprint
 bp = Blueprint('main', __name__)
 
@@ -39,6 +40,18 @@ def run_scraper_route():
         return jsonify({"status": "error", "message": "Database error occurred."}), 500
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+# def run_scraper_route():
+#     try:
+#         run_scraper()
+        
+#         return jsonify({"status": "success", "message": "Scraper is running!"})
+
+        
+#     except PyMongoError as e:
+#         return jsonify({"status": "error", "message": "Database error occurred."}), 500
+#     except Exception as e:
+#         return jsonify({"status": "error", "message": str(e)}), 500
 
 # Define multiple endpoints for the same view function
 bp.add_url_rule(rule='/', view_func=index)

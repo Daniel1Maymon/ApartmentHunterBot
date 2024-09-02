@@ -5,6 +5,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Script Scheduling</title>
+        <!-- Including the Socket.IO from the CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     </head>
@@ -26,6 +28,18 @@
                 <iframe id="loading-gif" src="https://giphy.com/embed/v65rDtklV9l6g" width="267" height="480"
                     style="border: block;" frameborder="0" allowfullscreen></iframe>
             </div>
+
+            <table id="postsTable" border="1">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- new posts will added here -->
+                </tbody>
+            </table>
 
             <!-- Return Back Button -->
             <a href="{{ url_for('main.index') }}" class="btn btn-blue">Return Back</a>

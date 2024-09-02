@@ -5,12 +5,56 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Notification Settings</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
     </head>
 
     <body>
-        <!-- Return Back Button -->
-        <a href="{{ url_for('main.index') }}" class="btn btn-blue">Return Back</a>
+        <div class="container">
+            <h2>User Input Form</h2>
+            <form id="user-form">
+                <!-- <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username">
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password">
+                </div> -->
+
+                <div class="input-group" id="links-group">
+                    <label for="link1">List of Links</label>
+                    <div class="links-input-field">
+                        <input type="text" id="link1" name="links[]" placeholder="Enter a link">
+                        <input type="text" id="link2" name="links[]" placeholder="Enter a link">
+                        <button type="button" id="add-link-btn" class="btn add-btn">Add +</button>
+                    </div>
+
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="input-group" id="email-addresses">
+                    <label for="email1">List of emails</label>
+                    <input type="text" id="email1" name="addresses[]" placeholder="Email address for notification">
+                    <button type="button" id="add-email-btn" class="btn add-btn">Add +</button>
+                </div>
+
+                <div class="spacer"></div>
+
+                <button type="submit" class="btn submit-btn">Save</button>
+            </form>
+        </div>
+
+        <div class="spacer"></div>
+        <div class="button-container" style="text-align: center; ">
+            <!-- Return Back Button -->
+            <a href="{{ url_for('main.index') }}" class="btn btn-blue">Return Back</a>
+        </div>
+
+
+
+        <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     </body>
 
 </html>

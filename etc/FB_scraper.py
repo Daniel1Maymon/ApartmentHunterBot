@@ -7,6 +7,7 @@ from flaskr.database import mongo
 from flask import current_app
 
 from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
+from flaskr.extensions import socketio  # Import socketio
 
 group_links = [
                 "https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
@@ -110,7 +111,7 @@ def run_multiple_logins(times, username, password):
     # Create a Playwright session
     with sync_playwright() as p:
         for i in range(times):
-            browser = p.chromium.launch(headless=False)  # Set headless=False to see the login process
+            browser = p.chromium.launch(headless=True)  # Set headless=False to see the login process
             page = browser.new_page()
             
             print(f"Attempt {i + 1}: Logging in...")
@@ -214,6 +215,7 @@ def scrape_group_posts(page, group_url, max_posts=10):
                             "hasBeenSent": False
                         }
                         posts.append(_post)
+                        socketio.emit("new_post", _post)
                     
                     print(":: END OF post_content ::")
                     # posts.append(post_text)
@@ -234,7 +236,7 @@ def mark_posts_as_sent():
 def make_login_and_get_new_posts():
     posts = []
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
 
         username = os.getenv("FB_USERNAME")

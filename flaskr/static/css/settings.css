@@ -1,0 +1,130 @@
+html, body {
+    height: 100vh;
+     /* width: 500px; */
+    max-width: 100%;
+    /* Ensure the body takes full height */
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    /* Center content horizontally */
+    align-items: center;
+    /* Center content vertically */
+    flex-direction: column;
+    
+    border: 1px solid #ff0c0c;
+    border-radius: 5px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    /* Stack buttons vertically */
+    align-items: center;
+    /* Center buttons horizontally */
+    gap: 30px;
+    /* Space between buttons */
+    border: 1px solid #111010;
+    border-radius: 5px;
+    width: 100%;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.input-group {
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.spacer {
+    height: 20px;
+}
+
+
+.input-group input[type="text"],
+.input-group input[type="password"] {
+    width: 100%;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+
+.add-btn {
+    background-color: blue;
+}
+
+
+.add-btn:hover {
+    background-color: darkblue;
+}
+
+
+.submit-btn {
+    background-color: green;
+}
+
+.submit-btn:hover {
+    background-color: darkgreen;
+} 
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    /* Stack buttons vertically */
+    align-items: center;
+    /* Center buttons horizontally */
+    gap: 30px;
+    /* Space between buttons */
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-blue {
+    background-color: #007bff;
+}
+
+/* Hover effects */
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
