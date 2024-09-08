@@ -65,7 +65,7 @@ async function handleRunScraper() {
     await runScraper();
 
     // Listen for 'new_post' event
-    socket.on('new_post', handleNewPost);
+    // socket.on('new_post', handleNewPost);
 
     console.log("\nhideLoading()\n");
     hideLoading()
@@ -73,7 +73,7 @@ async function handleRunScraper() {
 
 // Function to set up event listeners
 function setupEventListeners() {
-    const socket = io(); 
+    // const socket = io(); 
 
     const runScraperBtn = document.getElementById('run-scraper-btn');
     console.log(runScraperBtn);

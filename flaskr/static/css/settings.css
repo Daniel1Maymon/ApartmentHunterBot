@@ -128,3 +128,32 @@ h2 {
     transform: translateY(1px);
 }
 
+.links-input-field {
+    display: flex;
+    flex-direction: column;
+    /* Ensures new inputs stack vertically */
+    gap: 10px;
+    /* Adds space between inputs */
+}
+
+.links-input-field input[type="text"] {
+    width: 100%;
+    /* Allows the input to take up the full width of the container */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.addresses-input-field {
+    display: flex;
+    flex-direction: column;
+    /* Ensures new inputs stack vertically */
+    gap: 10px;
+    /* Adds space between inputs */
+}
+
+.addresses-input-field input[type="text"] {
+    width: 100%;
+    /* Allows the input to take up the full width of the container */
+    padding: 10px;
+    box-sizing: border-box;
+}

@@ -9,9 +9,11 @@ from flaskr import create_app
 
 
 app = create_app()
+# celery = make_celery(app)
 
-# from flaskr.extensions import socketio  # Import socketio from extensions.py
+
 
 if __name__ == "__main__":
-    app.run()
+    
+    app.run(debug=False)
     # socketio.run(app)

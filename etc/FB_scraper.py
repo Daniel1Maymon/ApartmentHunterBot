@@ -7,7 +7,7 @@ from flaskr.database import mongo
 from flask import current_app
 
 from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
-from flaskr.extensions import socketio  # Import socketio
+# from flaskr.extensions import socketio  # Import socketio
 
 group_links = [
                 "https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
@@ -215,7 +215,7 @@ def scrape_group_posts(page, group_url, max_posts=10):
                             "hasBeenSent": False
                         }
                         posts.append(_post)
-                        socketio.emit("new_post", _post)
+                        # socketio.emit("new_post", _post)
                     
                     print(":: END OF post_content ::")
                     # posts.append(post_text)
@@ -236,7 +236,7 @@ def mark_posts_as_sent():
 def make_login_and_get_new_posts():
     posts = []
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
         username = os.getenv("FB_USERNAME")
@@ -297,4 +297,5 @@ def main():
     
 
 if __name__ == "__main__":
-    main()
+    # main()
+    run_scraper()
