@@ -13,7 +13,6 @@ group_links = [
                 "https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1870209196564360/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/520940308003364/?sorting_setting=CHRONOLOGICAL",
-               "https://www.facebook.com/groups/647901439404148/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/186810449287215/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/2098391913533248/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1998122560446744/?sorting_setting=CHRONOLOGICAL",
@@ -27,6 +26,10 @@ group_links = [
 filters = [
     "רמת גן", 
     'ר"ג', 
+    "ר״ג",
+    "נווה יהושע",
+    "תל אביב",
+    "שותפים"
     "רמת-גן", 
     "שותף", 
     "שותפה", 

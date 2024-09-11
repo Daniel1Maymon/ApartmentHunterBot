@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template, jsonify, request
 from etc.fb_scraper import run_scraper, send_email_with_new_posts
-from models import post
+# from models import post
 from pymongo.errors import PyMongoError
+
+from flaskr.models import post
 # from .tasks import print_message
 
 # Create a Blueprint
