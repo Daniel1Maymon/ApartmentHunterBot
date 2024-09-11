@@ -5,3 +5,10 @@ myvenv/
 
 *.pyc
 __pycache__/
+
+*.log
+
+filters.txt
+groups.txt
+
+!*.example

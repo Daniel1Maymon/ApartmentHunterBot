@@ -15,10 +15,10 @@ load_dotenv(dotenv_path=get_env_path())
 def make_celery(app):
     celery = Celery(
         app.import_name,
-        backend='redis://localhost:6379/0',  # Using Redis as backend
-        broker='redis://localhost:6379/0'    # Using Redis as broker
+        backend=os.getenv("MONGO_URL"),  # Using Redis as backend
+        broker=os.getenv("MONGO_URL")    # Using Redis as broker
     )
-    
+
     celery.conf.update(app.config)
     return celery
 
@@ -26,12 +26,12 @@ def make_celery(app):
 
 def create_app():
     app = Flask(__name__)
-    
+
     # Load configuration
-    app.config["MONGO_URI"] = os.getenv(key="MONGO_URL")
-    
+    app.config["MONGO_URI"] = os.getenv("MONGO_URL")
+
     # Initialize MongoClient once and store it in app.config
-    app.config['MONGO_CLIENT'] = MongoClient(os.getenv(key="MONGO_URL"))
+    app.config['MONGO_CLIENT'] = MongoClient(os.getenv("MONGO_URL"))
 
     # Initialize SocketIO with the app
     # socketio.init_app(app)
@@ -42,7 +42,7 @@ def create_app():
 
     # Initialize the database
     init_app(app)
-    
+
     # Middleware to handle PyMongo exceptions
     @app.errorhandler(code_or_exception=PyMongoError)
     def handle_pymongo_error(error):
