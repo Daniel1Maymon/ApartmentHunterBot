@@ -11,8 +11,8 @@ from flaskr.extensions import socketio # Import socketio from extensions.py
 def make_celery(app):
     celery = Celery(
         app.import_name,
-        backend=os.getenv("MONGO_URL"),  # Using Redis as backend
-        broker=os.getenv("MONGO_URL")    # Using Redis as broker
+        backend=os.getenv("REDIS_URI"),  # Using Redis as backend
+        broker=os.getenv("REDIS_URI")    # Using Redis as broker
     )
 
     celery.conf.update(app.config)
@@ -22,10 +22,10 @@ def create_app():
     app = Flask(__name__)
 
     # Load configuration
-    app.config["MONGO_URI"] = os.getenv("MONGO_URL")
+    app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
     # Initialize MongoClient once and store it in app.config
-    app.config['MONGO_CLIENT'] = MongoClient(os.getenv("MONGO_URL"))
+    app.config['MONGO_CLIENT'] = MongoClient(os.getenv("MONGO_URI"))
 
     # Initialize SocketIO with the app
     # socketio.init_app(app)

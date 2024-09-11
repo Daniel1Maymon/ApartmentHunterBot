@@ -14,7 +14,7 @@ services:
       - redis
 
   mongo:
-    image: mongo:alpine
+    image: mongo:latest
     container_name: mongo
     ports:
       - "27017:27017"
@@ -22,7 +22,7 @@ services:
       - mongo-data:/data/db
 
   redis:
-    image: redis:alpine
+    image: redis:latest
     container_name: redis
     ports:
       - "6379:6379"

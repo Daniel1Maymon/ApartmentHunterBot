@@ -2,8 +2,7 @@ import os, sys
 
 if os.getenv('DOCKER_CONTAINER') is None:
     from dotenv import load_dotenv
-    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
-    load_dotenv(env_path)
+    load_dotenv()
     os.environ['PYTHONPATH'] = os.getenv('PROJECT_PATH')
 
 if __name__ == "__main__":

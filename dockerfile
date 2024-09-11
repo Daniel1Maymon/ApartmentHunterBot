@@ -1,9 +1,10 @@
 FROM python:3.8-slim
 
-WORKDIR /app
-
 ENV DOCKER_CONTAINER=1
+ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
 
 COPY requirements.txt .
 
