@@ -1,7 +1,6 @@
-from pymongo import MongoClient
 from datetime import datetime, timezone
+
 from flaskr.database import mongo
-from pymongo.errors import PyMongoError
 
 def save_schedule(schedule_data):
     """

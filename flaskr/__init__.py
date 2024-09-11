@@ -1,15 +1,11 @@
-from flask import Flask, jsonify
-from .database import init_app
-import os
-from dotenv import load_dotenv
-from etc.fb_scraper import  get_env_path
-from pymongo.errors import PyMongoError
-from pymongo import MongoClient
-from .extensions import socketio  # Import socketio from extensions.py
 from celery import Celery # type: ignore
+from flask import Flask, jsonify
+from pymongo import MongoClient
+from pymongo.errors import PyMongoError
+import os
 
-# Load the .env file
-load_dotenv(dotenv_path=get_env_path())
+from flaskr.database import init_app
+from flaskr.extensions import socketio # Import socketio from extensions.py
 
 # Celery configuration
 def make_celery(app):
@@ -21,8 +17,6 @@ def make_celery(app):
 
     celery.conf.update(app.config)
     return celery
-
-
 
 def create_app():
     app = Flask(__name__)
@@ -37,7 +31,7 @@ def create_app():
     # socketio.init_app(app)
 
     # Register Blueprints or routes here
-    from . import routes
+    from flaskr import routes
     app.register_blueprint(blueprint=routes.bp)
 
     # Initialize the database

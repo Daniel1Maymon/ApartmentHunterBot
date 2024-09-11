@@ -1,7 +1,6 @@
-from datetime import datetime
-from bson.objectid import ObjectId
-from flaskr.database import mongo
 from pymongo.errors import PyMongoError
+
+from flaskr.database import mongo
 
 def update_posts_by_filter(filter_criteria, update_values):
     """
@@ -14,11 +13,11 @@ def update_posts_by_filter(filter_criteria, update_values):
     Returns:
     - The number of documents that were updated.
     """
-    
+
     result = mongo.db.collection.update_many(
-        filter=filter_criteria, 
+        filter=filter_criteria,
         update={'$set': update_values})
-    
+
     return result.modified_count
 
 def get_posts_by_filter(filter_criteria):
@@ -32,7 +31,7 @@ def get_posts_by_filter(filter_criteria):
     - A list of posts that match the filter criteria.
     """
     posts = mongo.db.collection.find(filter_criteria)
-    return list(posts) 
+    return list(posts)
 
 def insert_post(link, content):
     """
@@ -45,13 +44,13 @@ def insert_post(link, content):
     Returns:
     - The ID of the inserted post.
     """
-    
+
     pass
 
 def insert_posts(posts: list):
     try:
         result = mongo.db.collection.insert_many(documents=posts)
-    
+
     except PyMongoError as e:
         raise PyMongoError(f"An error occurred while saving the posts: {e}")
 
@@ -65,7 +64,7 @@ def get_post_by_id(post_id):
     Returns:
     - The post document, or None if not found.
     """
-    
+
     pass
 
 def get_all_posts():
@@ -75,7 +74,7 @@ def get_all_posts():
     Returns:
     - A list of post documents.
     """
-    
+
     pass
 
 
@@ -89,6 +88,5 @@ def delete_post(post_id):
     Returns:
     - The result of the delete operation.
     """
-    
+
     pass
-   

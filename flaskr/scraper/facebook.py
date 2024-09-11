@@ -1,34 +1,14 @@
 from playwright.sync_api import sync_playwright
-from dotenv import load_dotenv
 import os, time, random
-# from etc import email_functions
-from etc import email_functions
+
 from flaskr.database import mongo
-from flask import current_app
-
-from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
+from flaskr.email_functions import format_posts_for_email, send_email
 # from flaskr.extensions import socketio  # Import socketio
+from flaskr.helpers import load_file_as_list
+from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
 
-# def load_file_as_list(file_path):
-#     with open(file_path, 'r', encoding='utf-8') as file:
-#         return [line.strip() for line in file if line.strip()]
-load_file_as_list = lambda file_path: [line.strip() for line in open(file_path, "r", encoding="utf-8").readlines()]
-
-def get_env_path() -> str:
-    # Get the directory of the current script
-    current_directory = os.path.dirname(__file__)
-
-    # Navigate to the parent directory (ApartmentHunterBot)
-    parent_directory = os.path.dirname(current_directory)
-
-    # Create the full path to the .env file
-    env_path = os.path.join(parent_directory, '.env')
-
-    return env_path
-
-
-# Load the .env file
-load_dotenv(dotenv_path=get_env_path())
+GROUP_IDS = load_file_as_list(os.getenv("GROUPS_FILE_PATH"))
+UNWANTED_WORDS = load_file_as_list(os.getenv("FILTERS_FILE_PATH"))
 
 def login_to_facebook(page, username, password):
     # Navigate to Facebook's website
@@ -101,9 +81,7 @@ def click_on_see_more_button(page, post):
         page.wait_for_timeout(1000)  # Wait for content to expand
 
 def post_contain_unwanted_words(post_content):
-    words_to_filter = load_file_as_list(os.getenv("FILTERS_FILE_PATH"))
-
-    for filter in words_to_filter:
+    for filter in UNWANTED_WORDS:
         if filter in post_content:
             print(f"\n------The word [{filter}] is in [{post_content}]-------\n")
             return True
@@ -193,15 +171,13 @@ def make_login_and_get_new_posts():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        username = os.getenv("FB_USERNAME")
-        password = os.getenv("FB_PASSWORD")
+        username = os.getenv("FACEBOOK_USERNAME")
+        password = os.getenv("FACEBOOK_PASSWORD")
 
         login_to_facebook(page, username, password)
 
-        group_ids = load_file_as_list(os.getenv("GROUPS_FILE_PATH"))
-
         posts = []
-        for group_id in group_ids:
+        for group_id in GROUP_IDS:
             link = f"https://www.facebook.com/groups/{group_id}/?sorting_setting=CHRONOLOGICAL"
             group_posts = scrape_group_posts(page, link)
             posts.extend(group_posts)
@@ -218,18 +194,19 @@ def send_email_with_new_posts():
 
     new_posts = get_posts_by_filter(filter_criteria=filter)
 
-    sender = os.getenv("SENDER_EMAIL")
-    recipients = os.getenv("RECIPIENTS_EMAIL").split(",").append(sender)
+    sender = os.getenv("EMAIL_SENDER")
+    recipients = os.getenv("EMAIL_RECEIVERS").split(",").append(sender)
     subject = os.getenv("EMAIL_SUBJECT")
+
 
     if not new_posts:
         print("No new posts found")
 
     else:
         print(f"\n--------- Sending email with the new posts ({len(new_posts)} found) --------- \n")
-        msg = email_functions.format_posts_for_email(posts=new_posts)
+        msg = format_posts_for_email(posts=new_posts)
 
-        email_functions.send_email(subject=subject, body=msg, sender=sender, recipients=recipients)
+        send_email(subject=subject, body=msg, sender=sender, recipients=recipients)
 
         # Marking the nre posts as sent
         mark_posts_as_sent()
@@ -244,15 +221,3 @@ def run_scraper():
     print(f"\n---------\ntotal running time: {total_time} ({(total_time/60):.2f} minutes)\n---------\n")
 
     return new_posts
-
-def main():
-
-    # run_multiple_logins(1, username, password)
-    make_login_and_get_new_posts()
-
-
-
-
-if __name__ == "__main__":
-    # main()
-    run_scraper()

@@ -1,10 +1,9 @@
-from flask import Blueprint, render_template, jsonify, request
-from etc.fb_scraper import run_scraper, send_email_with_new_posts
-# from models import post
+from flask import Blueprint, render_template, jsonify
 from pymongo.errors import PyMongoError
 
 from flaskr.models import post
-# from .tasks import print_message
+from flaskr.scraper.facebook import run_scraper, send_email_with_new_posts
+# from flaskr.tasks import print_message
 
 # Create a Blueprint
 bp = Blueprint('main', __name__)
@@ -31,15 +30,16 @@ def run_scraper_route():
         posts = run_scraper()
         if not posts:
             return jsonify({ "message": "No new posts found"})
-        
+
         post.insert_posts(posts=posts)
         print("\n--------- Sending email with the new posts --------- \n")
         send_email_with_new_posts()
 
         return jsonify({"status": "success", "message": f"Scraper ran successfully!\n{len(posts)} new posts found\nAn email has been sent\n"})
-    
+
     except PyMongoError as e:
         return jsonify({"status": "error", "message": "Database error occurred."}), 500
+
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 

@@ -1,4 +1,4 @@
-from flask_pymongo import PyMongo 
+from flask_pymongo import PyMongo
 
 print(f"\n::: _name__ = {__name__} :::\n")
 
