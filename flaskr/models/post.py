@@ -2,6 +2,7 @@ from pymongo.errors import PyMongoError
 
 from flaskr.database import mongo
 
+
 def update_posts_by_filter(filter_criteria, update_values):
     """
     Updates posts in the database based on the given filter criteria.
@@ -15,10 +16,11 @@ def update_posts_by_filter(filter_criteria, update_values):
     """
 
     result = mongo.db.collection.update_many(
-        filter=filter_criteria,
-        update={'$set': update_values})
+        filter=filter_criteria, update={"$set": update_values}
+    )
 
     return result.modified_count
+
 
 def get_posts_by_filter(filter_criteria):
     """
@@ -32,6 +34,7 @@ def get_posts_by_filter(filter_criteria):
     """
     posts = mongo.db.collection.find(filter_criteria)
     return list(posts)
+
 
 def insert_post(link, content):
     """
@@ -47,12 +50,14 @@ def insert_post(link, content):
 
     pass
 
+
 def insert_posts(posts: list):
     try:
         result = mongo.db.collection.insert_many(documents=posts)
 
     except PyMongoError as e:
         raise PyMongoError(f"An error occurred while saving the posts: {e}")
+
 
 def get_post_by_id(post_id):
     """
@@ -66,6 +71,7 @@ def get_post_by_id(post_id):
     """
 
     pass
+
 
 def get_all_posts():
     """

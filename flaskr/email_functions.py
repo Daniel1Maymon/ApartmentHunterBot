@@ -1,6 +1,7 @@
 import smtplib, os
 from email.mime.text import MIMEText
 
+
 def format_posts_for_email(posts):
     """
     Formats a list of posts (documents) into a single string for email body.
@@ -22,13 +23,14 @@ def format_posts_for_email(posts):
     formatted_message += "</div>\n"
     return formatted_message
 
+
 def send_email(subject, body, sender, recipients):
     msg = MIMEText(body, "html")
-    msg['Subject'] = subject
-    msg['From'] = sender
-    msg['To'] = recipients.join(",")
+    msg["Subject"] = subject
+    msg["From"] = sender
+    msg["To"] = recipients.join(",")
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
         smtp_server.login(sender, os.getenv("GOOGLE_APP_PASSWORD"))
         smtp_server.sendmail(from_addr=sender, to_addrs=recipients, msg=msg.as_string())
         print("Message sent")
