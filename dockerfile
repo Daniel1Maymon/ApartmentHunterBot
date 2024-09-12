@@ -1,12 +1,15 @@
 FROM python:3.8-slim
 
+ENV DOCKER_CONTAINER=1
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-COPY requirements.txt requirements.txt 
+COPY requirements.txt .
 
-RUN pip install -r requirements.txt
-
-COPY . .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN playwright install --with-deps chromium
 
 EXPOSE 5000
 

@@ -1,4 +1,5 @@
-# from . import celery
+import celery
+
 
 @celery.task
 def print_message(message):

@@ -1,7 +1,7 @@
-from pymongo import MongoClient
 from datetime import datetime, timezone
+
 from flaskr.database import mongo
-from pymongo.errors import PyMongoError
+
 
 def save_schedule(schedule_data):
     """
@@ -13,21 +13,21 @@ def save_schedule(schedule_data):
     Returns:
     - The ID of the inserted or updated document.
     """
-    schedule_data['created_at'] = datetime.now(timezone.utc).isoformat()
-    schedule_data['updated_at'] = datetime.now(timezone.utc).isoformat()
-    schedule_data['is_active'] = True
+    schedule_data["created_at"] = datetime.now(timezone.utc).isoformat()
+    schedule_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    schedule_data["is_active"] = True
 
     existing_schedule = mongo.db.schedules.find_one({})
 
     if existing_schedule:
         result = mongo.db.schedules.update_one(
-            {"_id": existing_schedule["_id"]},
-            {"$set": schedule_data}
+            {"_id": existing_schedule["_id"]}, {"$set": schedule_data}
         )
         return existing_schedule["_id"] if result.modified_count > 0 else None
     else:
         result = mongo.db.schedules.insert_one(schedule_data)
         return result.inserted_id
+
 
 def get_schedule(filter_criteria={}):
     """
@@ -41,6 +41,7 @@ def get_schedule(filter_criteria={}):
     """
     return mongo.db.schedules.find_one(filter_criteria)
 
+
 def update_schedule_by_filter(filter_criteria, update_values):
     """
     Updates schedules in the database based on the given filter criteria.
@@ -53,10 +54,10 @@ def update_schedule_by_filter(filter_criteria, update_values):
     - The number of documents that were updated.
     """
     result = mongo.db.schedules.update_many(
-        filter=filter_criteria,
-        update={'$set': update_values}
+        filter=filter_criteria, update={"$set": update_values}
     )
     return result.modified_count
+
 
 def delete_schedule(filter_criteria={}):
     """
