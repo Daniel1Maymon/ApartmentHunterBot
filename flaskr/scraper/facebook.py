@@ -200,7 +200,7 @@ def make_login_and_get_new_posts():
 
         posts = []
         for group_id in GROUP_IDS:
-            link = f"https://www.facebook.com/groups/{group_id}/?sorting_setting=CHRONOLOGICAL"
+            link = f"https://www.facebook.com/groups/{group_id}?sorting_setting=CHRONOLOGICAL"
             group_posts = scrape_group_posts(page, link)
             posts.extend(group_posts)
             pass
