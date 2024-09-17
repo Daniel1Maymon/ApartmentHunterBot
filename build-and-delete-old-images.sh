@@ -18,3 +18,5 @@ DANGLING_IMAGES=$(docker images -f "dangling=true" -q)
 if [ -n "$DANGLING_IMAGES" ]; then
     docker rmi -f $DANGLING_IMAGES
 fi
+
+docker run -p 5000:5000 apartment-hunter bot
