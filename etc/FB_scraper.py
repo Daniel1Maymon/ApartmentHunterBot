@@ -10,9 +10,9 @@ from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
 # from flaskr.extensions import socketio  # Import socketio
 
 group_links = [
-                "https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
+                "https://www.facebook.com/groups/1380680752778760/?# sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1870209196564360/?sorting_setting=CHRONOLOGICAL",
-               "https://www.facebook.com/groups/520940308003364/?sorting_setting=CHRONOLOGICAL",
+                "https://www.facebook.com/groups/520940308003364/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/186810449287215/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/2098391913533248/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1998122560446744/?sorting_setting=CHRONOLOGICAL",
@@ -248,7 +248,7 @@ def make_login_and_get_new_posts():
         login_to_facebook(page, username, password)
 
         posts = []
-        for link in group_links:
+        for link in group_links[:2]:
             group_posts = scrape_group_posts(page, link)
             posts.extend(group_posts)
             pass
