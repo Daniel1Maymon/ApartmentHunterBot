@@ -248,7 +248,7 @@ def make_login_and_get_new_posts():
         login_to_facebook(page, username, password)
 
         posts = []
-        for link in group_links[:2]:
+        for link in group_links:
             group_posts = scrape_group_posts(page, link)
             posts.extend(group_posts)
             pass
