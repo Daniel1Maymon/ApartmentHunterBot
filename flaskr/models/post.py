@@ -34,19 +34,19 @@ def get_posts_by_filter(filter_criteria):
     posts = mongo.db.collection.find(filter_criteria)
     return list(posts) 
 
-def insert_post(link, content):
+def insert_post(post):
     """
     Inserts a new post into the database.
 
     Parameters:
-    - link: The URL link to the post.
-    - content: The content/text of the post.
+    - post: post contect (including link, content, hasBeenSent flag).
 
     Returns:
     - The ID of the inserted post.
     """
     
-    pass
+    result = mongo.db.collection.insert_one(post)
+    return result.inserted_id
 
 def insert_posts(posts: list):
     try:

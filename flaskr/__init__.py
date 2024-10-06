@@ -1,26 +1,28 @@
 from flask import Flask, jsonify
+
+from services.fb_scraper import get_env_path
 from .database import init_app
 import os
 from dotenv import load_dotenv
-from etc.fb_scraper import  get_env_path
+# from etc.fb_scraper import  get_env_path
 from pymongo.errors import PyMongoError
 from pymongo import MongoClient
 from .extensions import socketio  # Import socketio from extensions.py
-from celery import Celery # type: ignore
+from flask_sqlalchemy import SQLAlchemy # type: ignore
 
 # Load the .env file
 load_dotenv(dotenv_path=get_env_path())
 
 # Celery configuration
-def make_celery(app):
-    celery = Celery(
-        app.import_name,
-        backend='redis://localhost:6379/0',  # Using Redis as backend
-        broker='redis://localhost:6379/0'    # Using Redis as broker
-    )
+# def make_celery(app):
+#     celery = Celery(
+#         app.import_name,
+#         backend='redis://localhost:6379/0',  # Using Redis as backend
+#         broker='redis://localhost:6379/0'    # Using Redis as broker
+#     )
     
-    celery.conf.update(app.config)
-    return celery
+#     celery.conf.update(app.config)
+#     return celery
 
 
 
@@ -32,6 +34,11 @@ def create_app():
     
     # Initialize MongoClient once and store it in app.config
     app.config['MONGO_CLIENT'] = MongoClient(os.getenv(key="MONGO_URL"))
+    
+    # Set up the MySQL database URI using environment variables
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
     # Initialize SocketIO with the app
     # socketio.init_app(app)

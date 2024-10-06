@@ -1,12 +1,17 @@
+import json
+import re
+import traceback
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 import os, time, random
 # from etc import email_functions
 from etc import email_functions
+from etc.openai_model import extract_info
+from flaskr.data_access.post_repository import check_exists, save_post_on_db
 from flaskr.database import mongo
 from flask import current_app
 
-from flaskr.models.post import get_posts_by_filter, update_posts_by_filter
+from flaskr.models.post import get_posts_by_filter, insert_post, update_posts_by_filter
 # from flaskr.extensions import socketio  # Import socketio
 
 group_links = [
@@ -290,6 +295,105 @@ def run_scraper():
     print(f"\n---------\ntotal running time: {total_time} ({(total_time/60):.2f} minutes)\n---------\n")
     
     return new_posts
+
+def collect_group_posts_to_sql_db(page, group_url, max_posts=10):
+    page.goto(group_url)
+    time.sleep(5)  # Wait for the page to load
+    
+    # Select all posts visible on the page
+    post_elements = page.query_selector_all("div[role='article']")
+    
+    # Scroll down to load more posts
+    if len(post_elements) < 5:
+        page.evaluate("window.scrollBy(0, document.body.scrollHeight)")
+        time.sleep(random.randint(2, 4))  # Give some time for posts to load
+        post_elements = page.query_selector_all("div[role='article']")
+            
+            
+    # Clear empty posts
+    post_elements = [post for post in post_elements if len(post.inner_text()) > 0]
+    
+      
+    for post in post_elements:
+        try:
+            # Click on the "See More" button if it exists
+            click_on_see_more_button(page=page, post=post)
+            
+            # Extract text content from the post
+            post_text = post.inner_text()
+            post_link = get_post_link(post)
+            post_url_id = post_link.split("/")[-1]
+            
+
+            # if len(post_text) > 0 and not post_link_exists:    
+            if len(post_text) > 0:   
+                post_content_element = post.query_selector("div[data-ad-preview='message']")
+                if post_content_element and not check_exists(f'posts/{post_url_id}'):  
+                    post_content = post_content_element.inner_text()
+                    # print(f"---\npost_text[:10]= {post_text[:10]}")
+                    print(f"---\npost_text[:10]= {post_content[:10]}")
+                    post_content_exists = mongo.db.collection.find_one({"content": post_content})
+                    # if (not post_contain_unwanted_words(post_content)) and not post_content_exists:
+                    _post = {
+                        "link": post_link,
+                        "content": post_content,
+                        "hasBeenSent": False
+                    }
+                    insert_post(_post)
+                    
+                    # Send post to GPT:
+                    extracted_info = extract_info(post_content)
+                    
+                    if 'false' not in str.lower( extracted_info):
+                        extracted_info_in_json = json.loads(extracted_info)
+                        '''
+                        extracted_info_in_json = {
+                            'price': 5000,
+                            'rooms': 3,
+                            'size': 70,
+                            'city': 'Givataim',
+                            'address':'shenkin',
+                            'url': 'www....'
+                        }
+                        '''
+                        extracted_info_in_json['url'] = post_link
+                        extracted_info_in_json['description'] = post_content
+                        print(extracted_info_in_json)
+                        
+                        save_post_on_db(extracted_info_in_json)
+                        
+                        print(":: END OF post_content ::")
+                        # posts.append(post_text)
+                        print("---\n")
+                        # print(f"{post_link}")
+                        # print(f"{post_content}")  # Print or store the post content
+                
+        except Exception as e:
+            print(f"Error extracting post: {e}")
+            print("Detailed traceback:")
+            traceback.print_exc()
+
+            
+
+def scrape_and_store_posts():
+    print(f"\n---------\nsave_posts_on_db\n---------\n")
+    start_time = time.time()
+    # new_posts = make_login_and_get_new_posts() 
+    
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        
+        # Login:
+        username = os.getenv("FB_USERNAME")
+        password = os.getenv("FB_PASSWORD")
+        login_to_facebook(page, username, password)
+        
+        # Save posts on db
+        for link in group_links:
+            collect_group_posts_to_sql_db(page, link)
+            # 
 
 def main():
 
