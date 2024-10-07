@@ -8,7 +8,8 @@ if [ -n "$CONTAINERS" ]; then
 fi
 
 # Build the new image
-docker build -f dockerfile -t apartment-hunter-bot .
+docker build --cache-from=apartment-hunter-bot -f dockerfile -t apartment-hunter-bot .
+
 
 # Remove all dangling images (images with <none> tag) after the build process
 DANGLING_IMAGES=$(docker images -f "dangling=true" -q)

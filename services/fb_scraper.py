@@ -376,21 +376,25 @@ def collect_group_posts_to_sql_db(page, group_url, max_posts=10):
             
 
 def scrape_and_store_posts():
-    print(f"\n---------\nsave_posts_on_db\n---------\n")
+    print(f"\n---------\nscrape_and_store_posts()\n---------\n")
     start_time = time.time()
     # new_posts = make_login_and_get_new_posts() 
     
 
     with sync_playwright() as p:
+        print("Starting browser...")
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
         # Login:
         username = os.getenv("FB_USERNAME")
         password = os.getenv("FB_PASSWORD")
+        
+        print("Logging in...")
         login_to_facebook(page, username, password)
         
         # Save posts on db
+        print("Scraping posts...")
         for link in group_links:
             collect_group_posts_to_sql_db(page, link)
             # 

@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, jsonify, request
 from sqlalchemy import desc
 from services.fb_scraper import run_scraper, scrape_and_store_posts, send_email_with_new_posts
-# from models import post
 from pymongo.errors import PyMongoError
-
 from flaskr.models import post
-
 from flaskr.models.SQL.property import Property
 from flaskr.database import mySQL_db
+from datetime import datetime, timedelta
+from pytz import timezone
+import logging
 
 # from .tasks import print_message
 
@@ -31,12 +31,12 @@ def links():
     return render_template(template_name_or_list='saved_links.html')
 
 def scrape_posts():
+    logging.info("Scraping posts...")
     try:
         scrape_and_store_posts()
         
         return jsonify({"message": "Scraping and saving posts completed"}), 200
         
-        return "Success"
     except PyMongoError as e:
         return jsonify({"status": "error", "message": "Database error occurred."}), 500
     except Exception as e:
@@ -94,9 +94,8 @@ def index():
 @bp.route('/api/apartments')
 def get_apartments():
     properties = Property.query.order_by(desc(Property.created_at)).all()
-    # properties = Property.query.all()
-    # apartments = Apartment.query.all()
-    return jsonify([
+    
+    apartments = [
         {
             'description': p.description,
             'address': p.address,
@@ -108,9 +107,20 @@ def get_apartments():
             'url': p.url,
             'created_at': p.created_at.isoformat()
         } for p in properties
-    ])
+    ]
+    
+    for apartment in apartments:
+        if apartment['created_at']:
+            utc_dt = datetime.strptime(apartment['created_at'], '%Y-%m-%dT%H:%M:%S')
+            israel_dt = utc_to_israel_time(utc_dt)
+            apartment['created_at'] = israel_dt.strftime('%d-%m-%Y %H:%M:%S')
+    return jsonify(apartments)
 
 
+
+def utc_to_israel_time(utc_dt):
+    israel_tz = timezone('Asia/Jerusalem')
+    return utc_dt.replace(tzinfo=timezone('UTC')).astimezone(israel_tz)
 
 # Define multiple endpoints for the same view function
 bp.add_url_rule(rule='/', view_func=index)
