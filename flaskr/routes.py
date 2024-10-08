@@ -51,11 +51,13 @@ def scrape_posts():
         
         return jsonify({"message": "Scraping and saving posts completed"}), 200
         
+
+
     except PyMongoError as e:
-        logging.ERROR(f"Database error occurred")
+        logging.error(f"|Database error occurred|")
         return jsonify({"status": "error", "message": "Database error occurred."}), 500
     except Exception as e:
-        logging.ERROR(f"500: {str(e)}")
+        logging.error(f"|500: {str(e)}|")
         return jsonify({"status": "error", "message": str(e)}), 500
     
     finally:
