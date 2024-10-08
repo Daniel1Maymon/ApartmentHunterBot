@@ -423,6 +423,7 @@ def scrape_and_store_posts():
                 collect_group_posts_to_sql_db(page, link)
             except Exception as e:
                 logging.error(f"Error scraping posts from {link}: {e}")
+                login_to_facebook(page, username, password)
                 continue
             
 
