@@ -1,189 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facebook Hunter Bot</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        th:hover {
-            background-color: #e0e0e0;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        h1 {
-            text-align: center;
-        }
-        #searchInput {
-            width: 100%;
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 10px;
-            display: block;
-        }
 
-        
-    </style>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-        rel="stylesheet">
-
-</head>
-<body>
-    <h1>Facebook Hunter Bot</h1>
-    <input type="text" id="searchInput" placeholder="Search apartments...">
-    <table id="apartmentTable">
-        <thead>
-            <tr>
-                <th onclick="sortTable(0)">Description</th>
-                <th onclick="sortTable(1)">Address</th>
-                <th onclick="sortTable(2)">Price</th>
-                <th onclick="sortTable(3)">Rooms</th>
-                <th onclick="sortTable(4)">Size (sq ft)</th>
-                <th onclick="sortTable(5)">Phone</th>
-                <th onclick="sortTable(6)">City</th>
-                <th onclick="sortTable(7)">Url</th>
-                <th onclick="sortTable(8)">Created At</th>
-            </tr>
-        </thead>
-        <tbody id="apartmentTableBody">
-            <!-- Table body will be populated dynamically -->
-        </tbody>
-    </table>
-
-    <script>
-    function sortTable(n) {
-        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-        table = document.getElementById("apartmentTable");
-        switching = true;
-        dir = "asc";
-        while (switching) {
-            switching = false;
-            rows = table.rows;
-            for (i = 1; i < (rows.length - 1); i++) {
-                shouldSwitch = false;
-                x = rows[i].getElementsByTagName("TD")[n];
-                y = rows[i + 1].getElementsByTagName("TD")[n];
-
-                if (n === 1) { // Price column
-                    var xPrice = parseFloat(x.getAttribute('data-price')) || 0;
-                    var yPrice = parseFloat(y.getAttribute('data-price')) || 0;
-                    if (dir === "asc") {
-                        if (xPrice > yPrice) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else if (dir === "desc") {
-                        if (xPrice < yPrice) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    }
-                } else if (n === 2 || n === 3) { // Rooms and Size columns
-                    var xNum = parseInt(x.innerHTML);
-                    var yNum = parseInt(y.innerHTML);
-                    if (dir === "asc") {
-                        if (xNum > yNum) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else if (dir === "desc") {
-                        if (xNum < yNum) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    }
-                } else { // Other columns (text-based)
-                    if (dir === "asc") {
-                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else if (dir === "desc") {
-                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    }
-                }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Facebook Hunter Bot</title>
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
             }
-            if (n === 6) { // Created At column
-            var xDate = new Date(x.textContent);
-            var yDate = new Date(y.textContent);
-            if (dir === "asc") {
-                if (xDate > yDate) {
-                    shouldSwitch = true;
-                    break;
-                }
-            } else if (dir === "desc") {
-                if (xDate < yDate) {
-                    shouldSwitch = true;
-                    break;
-                }
-            }
-        }
 
-            if (shouldSwitch) {
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            th,
+            td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            th:hover {
+                background-color: #e0e0e0;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            #searchInput {
+                width: 100%;
+                max-width: 1000px;
+                margin: 20px auto;
+                padding: 10px;
+                display: block;
+            }
+        </style>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+            rel="stylesheet">
+
+    </head>
+
+    <body>
+        <h1>Facebook Hunter Bot</h1>
+        <input type="text" id="searchInput" placeholder="Search apartments...">
+        <table id="apartmentTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Description</th>
+                    <th onclick="sortTable(1)">Address</th>
+                    <th onclick="sortTable(2)">Price</th>
+                    <th onclick="sortTable(3)">Rooms</th>
+                    <th onclick="sortTable(4)">Size (sq ft)</th>
+                    <th onclick="sortTable(5)">Phone</th>
+                    <th onclick="sortTable(6)">City</th>
+                    <th onclick="sortTable(7)">Url</th>
+                    <th onclick="sortTable(8)">Created At</th>
+                </tr>
+            </thead>
+            <tbody id="apartmentTableBody">
+                <!-- Table body will be populated dynamically -->
+            </tbody>
+        </table>
+
+        <script>
+            function sortTable(n) {
+                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                table = document.getElementById("apartmentTable");
                 switching = true;
-                switchcount++;
-            } else {
-                if (switchcount === 0 && dir === "asc") {
-                    dir = "desc";
-                    switching = true;
+                dir = "asc";
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+
+                        if (n === 1) { // Price column
+                            var xPrice = parseFloat(x.getAttribute('data-price')) || 0;
+                            var yPrice = parseFloat(y.getAttribute('data-price')) || 0;
+                            if (dir === "asc") {
+                                if (xPrice > yPrice) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            } else if (dir === "desc") {
+                                if (xPrice < yPrice) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            }
+                        } else if (n === 2 || n === 3) { // Rooms and Size columns
+                            var xNum = parseInt(x.innerHTML);
+                            var yNum = parseInt(y.innerHTML);
+                            if (dir === "asc") {
+                                if (xNum > yNum) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            } else if (dir === "desc") {
+                                if (xNum < yNum) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            }
+                        } else { // Other columns (text-based)
+                            if (dir === "asc") {
+                                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            } else if (dir === "desc") {
+                                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                    shouldSwitch = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (n === 6) { // Created At column
+                        var xDate = new Date(x.textContent);
+                        var yDate = new Date(y.textContent);
+                        if (dir === "asc") {
+                            if (xDate > yDate) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (dir === "desc") {
+                            if (xDate < yDate) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                        switchcount++;
+                    } else {
+                        if (switchcount === 0 && dir === "asc") {
+                            dir = "desc";
+                            switching = true;
+                        }
+                    }
                 }
             }
-        }
-    }
 
-    function searchTable() {
-        var input, filter, table, tr, td, i, j, txtValue;
-        input = document.getElementById("searchInput");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("apartmentTable");
-        tr = table.getElementsByTagName("tr");
-        for (i = 1; i < tr.length; i++) {
-            tr[i].style.display = "none";
-            td = tr[i].getElementsByTagName("td");
-            for (j = 0; j < td.length; j++) {
-                txtValue = td[j].textContent || td[j].innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                    break;
+            function searchTable() {
+                var input, filter, table, tr, td, i, j, txtValue;
+                input = document.getElementById("searchInput");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("apartmentTable");
+                tr = table.getElementsByTagName("tr");
+                for (i = 1; i < tr.length; i++) {
+                    tr[i].style.display = "none";
+                    td = tr[i].getElementsByTagName("td");
+                    for (j = 0; j < td.length; j++) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
                 }
             }
-        }
-    }
 
-    function fetchApartments() {
-        fetch('/api/apartments')
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.getElementById('apartmentTableBody');
-                tableBody.innerHTML = '';
-                data.forEach(apartment => {
-                    const row = `
+            function fetchApartments() {
+                fetch('/api/apartments')
+                    .then(response => response.json())
+                    .then(data => {
+                        const tableBody = document.getElementById('apartmentTableBody');
+                        tableBody.innerHTML = '';
+                        data.forEach(apartment => {
+                            const row = `
                     <tr>
                         <td>${apartment.description}</td>
                         <td>${apartment.address}</td>
@@ -196,28 +204,29 @@
                         <td>${apartment.created_at}</td>
                     </tr>
                 `;
-                    tableBody.innerHTML += row;
-                });
-            })
-            .catch(error => console.error('Error fetching apartments:', error));
-    }
+                            tableBody.innerHTML += row;
+                        });
+                    })
+                    .catch(error => console.error('Error fetching apartments:', error));
+            }
 
-    function formatPrice(price) {
-        if (price === null || price === undefined) {
-            return 'N/A';
-        }
-        if (typeof price === 'number') {
-            return `₪${price.toFixed(2)}`;
-        } else if (typeof price === 'string') {
-            return price.startsWith('₪') ? price : `₪${price}`;
-        } else {
-            return 'N/A';
-        }
-    }
+            function formatPrice(price) {
+                if (price === null || price === undefined) {
+                    return 'N/A';
+                }
+                if (typeof price === 'number') {
+                    return `₪${price.toFixed(2)}`;
+                } else if (typeof price === 'string') {
+                    return price.startsWith('₪') ? price : `₪${price}`;
+                } else {
+                    return 'N/A';
+                }
+            }
 
-    document.addEventListener('DOMContentLoaded', fetchApartments);
+            document.addEventListener('DOMContentLoaded', fetchApartments);
 
-    document.getElementById("searchInput").addEventListener("keyup", searchTable);
-    </script>
-</body>
+            document.getElementById("searchInput").addEventListener("keyup", searchTable);
+        </script>
+    </body>
+
 </html>

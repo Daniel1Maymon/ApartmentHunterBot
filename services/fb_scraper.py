@@ -1,4 +1,6 @@
+import asyncio
 import json
+import logging
 import re
 import traceback
 from playwright.sync_api import sync_playwright
@@ -136,6 +138,7 @@ def run_multiple_logins(times, username, password):
             browser.close()
 
 def check_text_presence(page, text) -> bool:
+    logging.info(f"Checking if text '{text}' is present on the page")
     # Check if the specific text exists anywhere on the page
     return page.locator(f"text={text}").is_visible()
 
@@ -145,21 +148,35 @@ def find_see_more_button(post):
     return see_more_button 
 
 def click_on_see_more_button(page, post):
-    # Look for the "See more" or "ראה עוד" button within the specific post element
-    # see_more_button = post.locator("div[role='button']:has-text('See more'), div[role='button']:has-text('קרא עוד'), div[role='button']:has-text('ראה עוד')")
+    logging.info(f"Clicking on 'See more' button if exists")
+    
+    try:
+        # Use the page object to find the "See more" button within the post
+        see_more_button = post.query_selector("div[role='button']:has-text('See more'), div[role='button']:has-text('קרא עוד'), div[role='button']:has-text('ראה עוד')")
 
-    # Use the page object to find the "See more" button within the post
-    see_more_button = post.query_selector("div[role='button']:has-text('See more'), div[role='button']:has-text('קרא עוד'), div[role='button']:has-text('ראה עוד')")
-
-    # Click the "See more" button if it exists
-    if see_more_button and see_more_button.is_visible():
-        see_more_button.click()
-        page.wait_for_timeout(1000)  # Wait for content to expand
+        # Click the "See more" button if it exists
+        if not see_more_button:
+            # logging.warning("See more button not found")
+            return
+        
+        elif see_more_button.is_visible():
+            see_more_button.click(force=True)
+            logging.info("Clicked on 'See more' button")
+            
+        else:
+            logging.warning("See more button not visible")
+                
+    
+    except TimeoutError:
+        logging.warning("Timed out waiting for the 'See more' button")
+    
+    except Exception as e:
+        logging.error(f" |Error clicking on 'See more' button: {e}| ")
  
 def post_contain_unwanted_words(post_content):
     for word in filters:
         if word in post_content:
-            print(f"\n------The word [{word}] is in [{post_content}]-------\n")
+            # print(f"\n------The word [{word}] is in [{post_content}]-------\n")
             return True
         
     return False
@@ -301,6 +318,7 @@ def collect_group_posts_to_sql_db(page, group_url, max_posts=10):
     time.sleep(5)  # Wait for the page to load
     
     # Select all posts visible on the page
+    logging.info(f"Collecting posts from {group_url}")
     post_elements = page.query_selector_all("div[role='article']")
     
     # Scroll down to load more posts
@@ -313,8 +331,11 @@ def collect_group_posts_to_sql_db(page, group_url, max_posts=10):
     # Clear empty posts
     post_elements = [post for post in post_elements if len(post.inner_text()) > 0]
     
+    logging.info(f"Collected {len(post_elements)} posts from {group_url}")
+    
       
     for post in post_elements:
+        logging.info(f"Collecting post from {group_url}")
         try:
             # Click on the "See More" button if it exists
             click_on_see_more_button(page=page, post=post)
@@ -358,7 +379,7 @@ def collect_group_posts_to_sql_db(page, group_url, max_posts=10):
                         '''
                         extracted_info_in_json['url'] = post_link
                         extracted_info_in_json['description'] = post_content
-                        print(extracted_info_in_json)
+                        # print(extracted_info_in_json)
                         
                         save_post_on_db(extracted_info_in_json)
                         
@@ -397,16 +418,16 @@ def scrape_and_store_posts():
         print("Scraping posts...")
         for link in group_links:
             collect_group_posts_to_sql_db(page, link)
-            # 
+            
 
-def main():
+async def main():
 
     # run_multiple_logins(1, username, password)
-    make_login_and_get_new_posts()
+    await make_login_and_get_new_posts()
     
 
     
 
 if __name__ == "__main__":
     # main()
-    run_scraper()
+    asyncio.run(scrape_and_store_posts())

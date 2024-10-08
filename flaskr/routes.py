@@ -1,3 +1,4 @@
+import threading
 from flask import Blueprint, render_template, jsonify, request
 from sqlalchemy import desc
 from services.fb_scraper import run_scraper, scrape_and_store_posts, send_email_with_new_posts
@@ -9,7 +10,10 @@ from datetime import datetime, timedelta
 from pytz import timezone
 import logging
 
-# from .tasks import print_message
+
+# Global lock variable
+lock = threading.Lock()
+is_running = False
 
 # Create a Blueprint for routes
 bp = Blueprint('main', __name__)
@@ -31,6 +35,16 @@ def links():
     return render_template(template_name_or_list='saved_links.html')
 
 def scrape_posts():
+    global is_running
+    
+    # Lock the code to ensure the process runs only once
+    with lock:
+        if is_running:
+            return jsonify({"status": "error", "message": "Scraper is already running. Please wait until it finishes."}), 429
+
+        # Mark that the scraper has started running
+        is_running = True
+    
     logging.info("Scraping posts...")
     try:
         scrape_and_store_posts()
@@ -41,6 +55,12 @@ def scrape_posts():
         return jsonify({"status": "error", "message": "Database error occurred."}), 500
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+    
+    finally:
+        # Release the lock when scraper finishes
+        with lock:
+            is_running = False
+        logging.info("Scraper finished running.")
 
 def run_scraper_route():
     try:
