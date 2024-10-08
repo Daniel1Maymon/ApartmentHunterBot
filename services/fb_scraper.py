@@ -17,9 +17,6 @@ from flaskr.models.post import get_posts_by_filter, insert_post, update_posts_by
 # from flaskr.extensions import socketio  # Import socketio
 
 group_links = [
-                "https://www.facebook.com/groups/1068642559922565/?sorting_setting=CHRONOLOGICAL",
-                "https://www.facebook.com/groups/564985183576779/?sorting_setting=CHRONOLOGICAL",
-                "https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1870209196564360/?sorting_setting=CHRONOLOGICAL",
                 "https://www.facebook.com/groups/520940308003364/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/186810449287215/?sorting_setting=CHRONOLOGICAL",
