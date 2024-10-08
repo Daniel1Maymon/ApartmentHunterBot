@@ -17,7 +17,9 @@ from flaskr.models.post import get_posts_by_filter, insert_post, update_posts_by
 # from flaskr.extensions import socketio  # Import socketio
 
 group_links = [
-                "https://www.facebook.com/groups/1380680752778760/?# sorting_setting=CHRONOLOGICAL",
+                "https://www.facebook.com/groups/1068642559922565/?sorting_setting=CHRONOLOGICAL",
+                "https://www.facebook.com/groups/564985183576779/?sorting_setting=CHRONOLOGICAL",
+                "https://www.facebook.com/groups/1380680752778760/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/1870209196564360/?sorting_setting=CHRONOLOGICAL",
                 "https://www.facebook.com/groups/520940308003364/?sorting_setting=CHRONOLOGICAL",
                "https://www.facebook.com/groups/186810449287215/?sorting_setting=CHRONOLOGICAL",
@@ -314,7 +316,7 @@ def run_scraper():
     return new_posts
 
 def collect_group_posts_to_sql_db(page, group_url, max_posts=10):
-    page.goto(group_url)
+    page.goto(group_url) 
     time.sleep(5)  # Wait for the page to load
     
     # Select all posts visible on the page
@@ -417,7 +419,11 @@ def scrape_and_store_posts():
         # Save posts on db
         print("Scraping posts...")
         for link in group_links:
-            collect_group_posts_to_sql_db(page, link)
+            try:
+                collect_group_posts_to_sql_db(page, link)
+            except Exception as e:
+                logging.error(f"Error scraping posts from {link}: {e}")
+                continue
             
 
 async def main():
