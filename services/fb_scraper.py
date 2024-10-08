@@ -316,11 +316,10 @@ def run_scraper():
     return new_posts
 
 def collect_group_posts_to_sql_db(page, group_url, max_posts=10):
-    page.goto(group_url) 
-    time.sleep(5)  # Wait for the page to load
-    
-    # Select all posts visible on the page
     logging.info(f"Collecting posts from {group_url}")
+    page.goto(group_url) 
+    time.sleep(random.randint(5, 10))  # Wait for the page to load
+    
     post_elements = page.query_selector_all("div[role='article']")
     
     # Scroll down to load more posts
@@ -423,7 +422,7 @@ def scrape_and_store_posts():
                 collect_group_posts_to_sql_db(page, link)
             except Exception as e:
                 logging.error(f"Error scraping posts from {link}: {e}")
-                login_to_facebook(page, username, password)
+                time.sleep(random.randint(10, 30))
                 continue
             
 
